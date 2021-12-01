@@ -65,7 +65,14 @@ int main()
     float bgVel = 1;
     float bounceVel = -6;
     // char f[] = "sprites/logo4.bmp";
+    char f1[] = "sprites/yellowbird-downflap.bmp";
     char f2[] = "sprites/yellowbird-midflap.bmp";
+    char f3[] = "sprites/yellowbird-upflap.bmp";
+    char* f[] = {
+        f1,
+        f2,
+        f3
+        };
     char bg[] = "sprites/background-day.bmp";
     char base[] = "sprites/base.bmp";
     char tPipe[] = "sprites/pipe-green-down.bmp";
@@ -76,6 +83,7 @@ int main()
 
     // LCD.WriteLine("Hello World!");
     x += 1;
+    int fF = 0;
     while (1) 
     {
         LCD.Update();
@@ -83,6 +91,8 @@ int main()
         y += yVel;
         yVel += g;
         x -= bgVel;
+        fF++;
+        fF %= 9;
 
         drawImg(x, -1, 135, 240, 21, bg);
         drawImg(x + 132, -1, 135, 240, 21, bg);
@@ -92,7 +102,7 @@ int main()
         drawImg(2 * x, 150, 52, 320, 17, bPipe); 
 
         drawImg(2 * x, 205, 320, 107, 17, base);
-        drawImg(50, (int) y, 34, 24, 20, f2);
+        drawImg(50, (int) y, 34, 24, 20, f[(int) (fF / 3.0) % 3]);
 
         if (LCD.Touch(&xt, &yt))
         {
