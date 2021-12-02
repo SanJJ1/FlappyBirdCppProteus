@@ -43,6 +43,7 @@ void drawImg(int x, int y, int w, int h, int offset, char *fname)
             // LCD.DrawPixel(x + i, y + j);
         }
     }
+    delete buffer;
 }
 
 
@@ -60,19 +61,15 @@ int main()
     int x = 50;
     float y = 0;
     int xt, yt;
-    float g = .7;
+    float g = 2;
     float yVel = 0;
     float bgVel = 1;
-    float bounceVel = -6;
+    float bounceVel = -10;
     // char f[] = "sprites/logo4.bmp";
     char f1[] = "sprites/yellowbird-downflap.bmp";
     char f2[] = "sprites/yellowbird-midflap.bmp";
     char f3[] = "sprites/yellowbird-upflap.bmp";
-    char* f[] = {
-        f1,
-        f2,
-        f3
-        };
+    char* f[] = { f1, f2, f3, f2};
     char bg[] = "sprites/background-day.bmp";
     char base[] = "sprites/base.bmp";
     char tPipe[] = "sprites/pipe-green-down.bmp";
