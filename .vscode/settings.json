@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "atomic": "cpp",
+        "ios": "cpp",
+        "memory": "cpp",
+        "streambuf": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocnum": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp"
+    }
+}
