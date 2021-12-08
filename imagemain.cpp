@@ -388,8 +388,6 @@ bool Image::addCollision(int x,int y){
                 if(!collisionBuffer[y+j][x+i])
                 {
                     collisionBuffer[y+j][x+i]=true;
-                    LCD.SetFontColor(0xff00ff);
-                    LCD.DrawPixel(x + i, y + j);
                 }
                 else{
                     return true;
