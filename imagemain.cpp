@@ -17,7 +17,7 @@
 #define GAP_CONSTANT 40 
 
 // xTouch, yTouch; variables for detecting touch.
-int xt = 0, yt = 0, status = 0, highscore = 1234567890;
+int xt = 0, yt = 0, status = 0, highscore = 0;
 float score = 0;
 //collision buffer idea inspired by z buffer
 //https://en.wikipedia.org/wiki/Z-buffering
@@ -248,6 +248,10 @@ int main()
                 //activate the EASTER EGG
                 if(score==69)
                     coolMode=true;
+                    
+                //update high score
+                if(score>highscore)
+                    highscore = score;
 
                 //display the game over text along with the four buttons
                 gmeOvr.display(64, 20);
