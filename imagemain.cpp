@@ -2,10 +2,10 @@
 #include "FEHSD.h"
 #include "FEHUtility.h"
 #include "FEHRandom.h"
+
+// Since the FEHSD.h library doesn't work on all computers, it may be necessary to 
+// use <stdio.h> instead, as seen below.
 // #include <stdio.h>
-// #include <math.h>
-// #include <iostream>
-// using namespace std;
 
 #define WIDTH 320
 #define HEIGHT 240
@@ -26,11 +26,12 @@ float score = 0;
 bool collisionBuffer[HEIGHT][WIDTH] = {false}, active = true;
 bool goomd = false;
 
-/*Image Class
+/*
+    Image Class
     Image: constructor
     ~Image: destructor
-    display: takes in x and y for top left corner of image and draws it
-    addCollision: adds visible parts of image with top left corner of (x,y) to collision buffer
+    display(): takes in x and y for top left corner of image and draws it
+    addCollision(): adds visible parts of image with top left corner of (x,y) to collision buffer
     data: array of 32 bit color values
     fileName: file name
     w: width
@@ -49,8 +50,9 @@ class Image
         int w, h;
 };
 
-/*Button Class (Image subclass)
-    update: check if button is pressed, if so, call function
+/*
+    Button Class (Image subclass)
+    update(): check if button is pressed, if so, call function
     x, y: coordinates of top left corner of button
     bool pressed: whether or not the button was previously pressed
     *pressFunction: pointer to function called on button press
@@ -67,11 +69,12 @@ class Button : public Image
 
 };
 
-/*Pipe Class
+/*
+    Pipe Class
     Pipe(float): constructor
     Pipe(): constructor
-    update: update position and add pair of pipes to collision buffer
-    display: draw the pipes in the pair
+    update(): update position and add pair of pipes to collision buffer
+    display(): draw the pipes in the pair
     x,y: coordinates of top left corner
     top , bottom: images for bottom and top pipes
     gavePoints: whether or not points were earned for passing this pipe
@@ -88,6 +91,7 @@ class Pipe{
         bool gavePoints = false;
 };
 
+// Prototypes for all functions
 void clearCollisions();
 void restart();
 void start();
@@ -112,32 +116,33 @@ int main()
     // variables for the bird's mechanics.
     float y = 0, yVelocity = 0, g = .4, bounceVelocity = -3;
 
+    // variable for starting screen flappybirds sinewave bobbing
     float smooth = 0;
 
-    //all those images
-    Image yellowBird[] = {
+    // all those images
+    Image yellowBird[] = { // Array of birds animation frames
         Image("s/ybdf.txt"), Image("s/ybmf.txt"), Image("s/ybuf.txt"),
         Image("s/ybmf.txt")
         },
-        bigNums[] = {
+        bigNums[] = { // Large font numbers
             Image("s/0.txt"), Image("s/1.txt"), Image("s/2.txt"),
             Image("s/3.txt"), Image("s/4.txt"), Image("s/5.txt"),
             Image("s/6.txt"), Image("s/7.txt"), Image("s/8.txt"),
             Image("s/9.txt")
         },
-        medNums[] = {
+        medNums[] = { // Medium font numbers
             Image("s/0m.txt"), Image("s/1m.txt"), Image("s/2m.txt"),
             Image("s/3m.txt"), Image("s/4m.txt"), Image("s/5m.txt"),
             Image("s/6m.txt"), Image("s/7m.txt"), Image("s/8m.txt"),
             Image("s/9m.txt")
         },
-        smallNums[] = {
+        smallNums[] = { // Small font numbers
             Image("s/0s.txt"), Image("s/1s.txt"), Image("s/2s.txt"),
             Image("s/3s.txt"), Image("s/4s.txt"), Image("s/5s.txt"),
             Image("s/6s.txt"), Image("s/7s.txt"), Image("s/8s.txt"),
             Image("s/9s.txt")
         },
-        medals[] = {
+        medals[] = { // Medals
             Image("s/plat.txt"), Image("s/gold.txt"), Image("s/silv.txt"),
             Image("s/bron.txt")
         },
@@ -159,12 +164,14 @@ int main()
     Button credits("s/credits.txt", 54, 100, &showCredits);
     Button quit("s/quit.txt", 134, 157, &quitFunction);
 
-    // Buttons on stats pages
+    // Buttons on stats and credits pages
     Button backStats("s/back.txt", 20, 20, &backFunction);
     Button backCredits("s/credx.txt", 10, 10,&backFunction);
 
     float animationFrame = 0;
 
+
+    // Graphics While loop
     while (active)
     {   
         //clear the collision buffer and screen
@@ -196,7 +203,11 @@ int main()
         if(animationFrame > 4)
             animationFrame -= 4;
         
-
+        // Switch case implementing a state-driven FSM, inspired by 
+        // https://en.wikipedia.org/wiki/Event-driven_finite-state_machine
+        // basically checks 5 different cases, with each one being a different page.
+        // the execution of a certain case may or may not change status, thus potentially
+        // executing a new case, and effectively displaying a new page.
         switch (status)
         {
             case 0:    // Starting screen
@@ -295,7 +306,6 @@ int main()
                     40+ (excluding 69): platinum medal
                     69: cycles through all medals
                 */
-                
                 if(score == 69)
                     medals[(int) animationFrame].display(76, 92);
                 else if(score >= 40)
@@ -317,35 +327,40 @@ int main()
 
                 backCredits.update();
                 break;
+            default:
+                status = 0;
         }
     }
     
 }
+
+// Constructor for Image class. takes in string of text file location, and reads in each
+// line, representing an ARGB value, into a data array of size w * h.
 Image::Image(const char *fname)
 {   
     fileName = fname;
     //open the specified image file
-    FILE *fptr = fopen(fileName, "r");
+    // FILE *fptr = fopen(fileName, "r");
 
-    //read in width and height of image
-    fscanf(fptr, "%i", &w);
-    fscanf(fptr, "%i", &h);
+    // //read in width and height of image
+    // fscanf(fptr, "%i", &w);
+    // fscanf(fptr, "%i", &h);
 
-    //allocate memory for image data
-    data = new unsigned int[w * h];
+    // //allocate memory for image data
+    // data = new unsigned int[w * h];
 
-    //read in image colors
-    for (int i = 0; i < w * h; i ++)
-    {
-        fscanf(fptr, "%ui", &data[i]);
-    }
+    // //read in image colors
+    // for (int i = 0; i < w * h; i ++)
+    // {
+    //     fscanf(fptr, "%ui", &data[i]);
+    // }
 
-    //close the file
-    fclose(fptr);
+    // //close the file
+    // fclose(fptr);
 
     //below is literally the same thing but with the broken FEHSD library
 
-    /*fileName = fname;
+    fileName = fname;
     FEHFile *fptr = SD.FOpen(fileName, "r");
     SD.FScanf(fptr, "%i", &w);
     SD.FScanf(fptr, "%i", &h);
@@ -355,7 +370,7 @@ Image::Image(const char *fname)
     {
         SD.FScanf(fptr, "%ui", &data[i]);
     }
-    SD.FClose(fptr);*/
+    SD.FClose(fptr);
 }
 
 Image::~Image()
@@ -453,6 +468,7 @@ Pipe::Pipe(float X){
     y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
 }
 
+// Default constructor
 Pipe::Pipe(){
     y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
 }
@@ -540,7 +556,8 @@ void quitFunction()
     active = false;
 }
 
-//shows the score on a specified part of the screen with a specified font size (small, medium, or large)
+// shows the score on a specified part of the screen with a 
+// specified font size: smallNums, medNums, or bigNums
 void displayScore(int score, int x, int y, int spacing, Image *nums)
 {
     if (score == 0)
@@ -570,10 +587,12 @@ void clearCollisions(){
 // Extremely naive implementation of sin(x) to avoid using external library.
 // Uses first 7 terms of cosine Taylor series, since it has a lower error than the first 7
 // terms of sine's Taylor series. 
+// 7 terms is the minimum accuracy needed for the animation to stay smooth.
 // Shifts input, using the equivalence sin(x) = cos(x - pi/2).
 float sin(float x) {
     x = x - HALF_PI;
-    return 1 - 
+    return 
+    1 - 
     ((x * x) / (2)) + 
     ((x * x * x * x) / (24)) - 
     ((x * x * x * x * x * x) / (720)) + 
