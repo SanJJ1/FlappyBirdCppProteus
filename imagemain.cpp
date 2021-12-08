@@ -241,7 +241,7 @@ int main()
                 yellowBird[(int) animationFrame].display(50, y);
 
                 //display the score
-                displayScore((int) score, 100, 30, 14, medNums);
+                displayScore((int) score, 155, 30, 14, medNums);
 
                 //if the user taps the screen, make the bird "jump"
                 if (LCD.Touch(&xt, &yt))
@@ -282,9 +282,9 @@ int main()
                 //display the background and back button
                 backStats.display(backStats.x, backStats.y);
                 statsContent.display(50, 50);
+                base.display(foregroundX, 195);
                 
-                //add medals!
-                /*
+                /*adds medals!
                 last score:
                     0-9: no medal
                     10-19: bronze medal
@@ -302,8 +302,8 @@ int main()
                     medals[4-(int)score/10].display(76, 92);
 
                 //show the scores    
-                displayScore((int) score, 243, 85, 14, medNums);
-                displayScore((int) highscore, 243, 125, 14, medNums);
+                displayScore((int) score, 243, 82, 14, medNums);
+                displayScore((int) highscore, 243, 124, 14, medNums);
 
                 //add functionality for a back button
                 backStats.update();
@@ -532,11 +532,16 @@ void quitFunction()
 //shows the score on a specified part of the screen with a specified font size (small, medium, or large)
 void displayScore(int score, int x, int y, int spacing, Image *nums)
 {
-    while(score > 0)
+    if (score == 0)
+        nums[0].display(x, y);
+    else
     {
-        nums[score % 10].display(x, y);
-        score /= 10;
-        x -= spacing;
+        while(score > 0)
+        {
+            nums[score % 10].display(x, y);
+            score /= 10;
+            x -= spacing;
+        }
     }
 }
 
