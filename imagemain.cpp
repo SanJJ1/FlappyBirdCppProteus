@@ -339,38 +339,38 @@ int main()
 Image::Image(const char *fname)
 {   
     fileName = fname;
-    //open the specified image file
-    // FILE *fptr = fopen(fileName, "r");
+    open the specified image file
+    FILE *fptr = fopen(fileName, "r");
 
-    // //read in width and height of image
-    // fscanf(fptr, "%i", &w);
-    // fscanf(fptr, "%i", &h);
+    //read in width and height of image
+    fscanf(fptr, "%i", &w);
+    fscanf(fptr, "%i", &h);
 
-    // //allocate memory for image data
-    // data = new unsigned int[w * h];
+    //allocate memory for image data
+    data = new unsigned int[w * h];
 
-    // //read in image colors
-    // for (int i = 0; i < w * h; i ++)
-    // {
-    //     fscanf(fptr, "%ui", &data[i]);
-    // }
+    //read in image colors
+    for (int i = 0; i < w * h; i ++)
+    {
+        fscanf(fptr, "%ui", &data[i]);
+    }
 
-    // //close the file
-    // fclose(fptr);
+    //close the file
+    fclose(fptr);
 
     //below is literally the same thing but with the broken FEHSD library
 
-    fileName = fname;
-    FEHFile *fptr = SD.FOpen(fileName, "r");
-    SD.FScanf(fptr, "%i", &w);
-    SD.FScanf(fptr, "%i", &h);
-    data = new unsigned int[w * h];
+    // fileName = fname;
+    // FEHFile *fptr = SD.FOpen(fileName, "r");
+    // SD.FScanf(fptr, "%i", &w);
+    // SD.FScanf(fptr, "%i", &h);
+    // data = new unsigned int[w * h];
 
-    for (int i = 0; i < w * h; i ++)
-    {
-        SD.FScanf(fptr, "%ui", &data[i]);
-    }
-    SD.FClose(fptr);
+    // for (int i = 0; i < w * h; i ++)
+    // {
+    //     SD.FScanf(fptr, "%ui", &data[i]);
+    // }
+    // SD.FClose(fptr);
 }
 
 Image::~Image()
