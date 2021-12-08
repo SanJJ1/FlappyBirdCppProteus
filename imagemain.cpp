@@ -17,12 +17,12 @@
 #define GAP_CONSTANT 40 
 
 // xTouch, yTouch; variables for detecting touch.
-int xt = 0, yt = 0, status = 0, highscore = 1234567890;
+int xt = 0, yt = 0, status = 0, highscore = 0;
 float score = 0;
 //collision buffer idea inspired by z buffer
 //https://en.wikipedia.org/wiki/Z-buffering
 bool collisionBuffer[HEIGHT][WIDTH] = {false}, active = true;
-bool coolMode = false;
+bool goomd = false;
 
 /*Image Class
     Image: constructor
@@ -247,7 +247,11 @@ int main()
             case 2:    // Game over
                 //activate the EASTER EGG
                 if(score==69)
-                    coolMode=true;
+                    goomd=true;
+
+                //update high score
+                if(score>highscore)
+                    highscore = score;
 
                 //display the game over text along with the four buttons
                 gmeOvr.display(64, 20);
@@ -359,7 +363,7 @@ void Image::display(int x, int y)
             if (col & 0xFF000000 && y + j < HEIGHT && y + j >= 0)
             {   
                 //if the easter egg is activated, invert the  color
-                if(coolMode)
+                if(goomd)
                     LCD.SetFontColor(0xFFFFFFFF - col);
                 else
                     LCD.SetFontColor(col);
@@ -388,8 +392,6 @@ bool Image::addCollision(int x,int y){
                 if(!collisionBuffer[y+j][x+i])
                 {
                     collisionBuffer[y+j][x+i]=true;
-                    // LCD.SetFontColor(0xff00ff);
-                    // LCD.DrawPixel(x + i, y + j);
                 }
                 else{
                     return true;
