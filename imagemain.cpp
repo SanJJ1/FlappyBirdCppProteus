@@ -227,7 +227,10 @@ int main()
 
             case 1:    // Game in progress 
                 //projectile motion for bird
-                y += yVelocity;
+                if (y + yVelocity > 0)
+                {
+                    y += yVelocity;
+                }
                 yVelocity += g;
 
                 //display pipes and put them in the collision buffer
