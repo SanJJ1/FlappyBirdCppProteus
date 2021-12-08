@@ -1,4 +1,3 @@
-
 #include "FEHLCD.h"
 #include "FEHSD.h"
 #include "FEHUtility.h"
@@ -11,17 +10,17 @@
 #define WIDTH 320
 #define HEIGHT 240
 #define PIPE_NUM 2
-#define PIPE_WIDTH WIDTH/PIPE_NUM
-#define GAP_HEIGHT_RANGE 60
+#define PIPE_WIDTH WIDTH / PIPE_NUM
+#define GAP_HEIGHT_RANGE 67
 #define GAP_SIZE 80
-#define GAP_CONSTANT 40
+#define PIPE_HEIGHT GAP_SIZE / 2 + 24
 #define DOUBLE_PI 6.28318530717
 #define HALF_PI 1.570796326794
-// 9586476925286766559
 
 // xTouch, yTouch; variables for detecting touch.
-int xt = 0, yt = 0, status = 0, highscore = 0;
+int xTouch = 0, yTouch = 0, status = 0, highscore = 0;
 float score = 0;
+
 //collision buffer idea inspired by z buffer
 //https://en.wikipedia.org/wiki/Z-buffering
 bool collisionBuffer[HEIGHT][WIDTH] = {false}, active = true;
@@ -80,7 +79,7 @@ class Button : public Image
 class Pipe{
     public:
         Pipe(float);
-        Pipe(){};
+        Pipe();
         void update(float);
         void display();
         float x,y;
@@ -148,7 +147,7 @@ int main()
     //initialize positions of pipes
     for(int i=0;i<PIPE_NUM;i++){
         pipes[i].x = WIDTH+(i*PIPE_WIDTH);
-        pipes[i].y = Random.RandInt()%(GAP_HEIGHT_RANGE+1);
+        pipes[i].y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
     }
 
     // Buttons on start page
@@ -217,7 +216,7 @@ int main()
                 play.display(play.x, play.y);
 
                 //add functionality for play button
-                if(LCD.Touch(&xt, &yt))
+                if(LCD.Touch(&xTouch, &yTouch))
                 {
                     yVelocity = bounceVelocity;
                     start();
@@ -247,7 +246,7 @@ int main()
                 displayScore((int) score, 155, 30, 14, medNums);
 
                 //if the user taps the screen, make the bird "jump"
-                if (LCD.Touch(&xt, &yt))
+                if (LCD.Touch(&xTouch, &yTouch))
                     yVelocity = bounceVelocity;
                 
                 //if the bird has touched the pipes or floor, execute stuff inside
@@ -451,7 +450,11 @@ bool Button::update(){
 //pipe constructor
 Pipe::Pipe(float X){
     x = X;
-    y = Random.RandInt() % (GAP_HEIGHT_RANGE+1);
+    y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
+}
+
+Pipe::Pipe(){
+    y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
 }
 
 //updates position of pipe pair and adds them to collision buffer
@@ -466,22 +469,27 @@ void Pipe::update(float velocity){
     }
     
     //if the pipe reaches the left of the screen, move it to the right of the screen
-    if(x<=0){
-        x=WIDTH;
-        y = Random.RandInt()%(GAP_HEIGHT_RANGE+1);
-        gavePoints=false;
+    if(x <= 0){
+        x = WIDTH;
+        y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
+        gavePoints = false;
     }
 
     //add pipes to the collision buffer
-    bottom.addCollision(x-52,y+320-HEIGHT+GAP_SIZE/2.0+GAP_CONSTANT/2.0);
-    top.addCollision(x-52,y-320+HEIGHT/2.0-GAP_SIZE/2.0-GAP_CONSTANT/2.0);
+    top.addCollision(x - 52, y - 320 - GAP_SIZE / 2.0);
+    bottom.addCollision(x - 52, y + GAP_SIZE / 2.0);
+
+    // top.addCollision(x - 52, y - 320 + HEIGHT / 2.0 - GAP_SIZE / 2.0 - GAP_CONSTANT / 2.0);
+    // bottom.addCollision(x - 52, y + 320 - HEIGHT + GAP_SIZE / 2.0 + GAP_CONSTANT / 2.0);
 }
 
 //draw the pipe
 void Pipe::display(){
-    if(x>=0 && x<WIDTH){
-        bottom.display(x-52,y+320-HEIGHT+GAP_SIZE/2.0+GAP_CONSTANT/2.0);
-        top.display(x-52,y-320+HEIGHT/2.0-GAP_SIZE/2.0-GAP_CONSTANT/2.0);
+    if(x >= 0 && x < WIDTH){
+        top.display(x - 52, y - 320 - GAP_SIZE / 2.0);
+        bottom.display(x - 52, y + GAP_SIZE / 2.0);
+        // top.display(x-52, y - 320 + HEIGHT / 2.0 - GAP_SIZE / 2.0 - GAP_CONSTANT / 2.0);
+        // bottom.display(x-52, y + 320 - HEIGHT + GAP_SIZE / 2.0 + GAP_CONSTANT / 2.0);
     }
 }
 
@@ -504,7 +512,7 @@ void collision()
     status = 2; // Sets status to game over
     for(int i=0;i<PIPE_NUM;i++){
         pipes[i].x = WIDTH+i*PIPE_WIDTH;
-        pipes[i].y = Random.RandInt()%(GAP_HEIGHT_RANGE+1)-GAP_HEIGHT_RANGE/2.0;
+        pipes[i].y = Random.RandInt() % (GAP_HEIGHT_RANGE + 1) + PIPE_HEIGHT;
     }
 }
 
