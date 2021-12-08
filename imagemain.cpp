@@ -4,7 +4,7 @@
 #include "FEHUtility.h"
 #include "FEHRandom.h"
 // #include <stdio.h>
-#include <math.h>
+// #include <math.h>
 // #include <iostream>
 // using namespace std;
 
@@ -14,7 +14,10 @@
 #define PIPE_WIDTH WIDTH/PIPE_NUM
 #define GAP_HEIGHT_RANGE 60
 #define GAP_SIZE 80
-#define GAP_CONSTANT 40 
+#define GAP_CONSTANT 40
+#define DOUBLE_PI 6.28318530717
+#define HALF_PI 1.570796326794
+// 9586476925286766559
 
 // xTouch, yTouch; variables for detecting touch.
 int xt = 0, yt = 0, status = 0, highscore = 0;
@@ -96,6 +99,7 @@ void showCredits();
 void quitFunction();
 void displayScore(int, int, int, int, Image*);
 void clearCollisions();
+float sin(float);
 
 //set up an array of pipes
 Pipe pipes[PIPE_NUM];
@@ -188,7 +192,7 @@ int main()
         
 
         //make flappy bird's animation frame progress slightly slower than the frames move
-        animationFrame += .3;
+        animationFrame += .2;
         //this needs to be here because modulo doesn't work on floats
         if(animationFrame > 4)
             animationFrame -= 4;
@@ -196,10 +200,15 @@ int main()
 
         switch (status)
         {
-            case 0:    // Start menu
+            case 0:    // Starting screen
 
-                //make flappy bird move smoothly up and down
+                // make flappy bird move smoothly up and down, as the original game has in
+                // the starting screen. Resets the smooth variable, so that it stays 
+                // within the bounds of the taylor approximation. Does it at 2*pi
+                // so that the animation stays at the same y value when smooth resets.
                 smooth += .04;
+                if (smooth > DOUBLE_PI)
+                    smooth -= DOUBLE_PI;
                 y = (int) (sin(smooth) * 30) + 100;
 
                 //display the floor, bird, and play button
@@ -208,13 +217,15 @@ int main()
                 play.display(play.x, play.y);
 
                 //add functionality for play button
-                play.update();
+                if(LCD.Touch(&xt, &yt))
+                {
+                    yVelocity = bounceVelocity;
+                    start();
+                }
+                // play.update();
                 break;
 
             case 1:    // Game in progress 
-                
-                
-
                 //projectile motion for bird
                 y += yVelocity;
                 yVelocity += g;
@@ -259,6 +270,7 @@ int main()
                 stats.display(stats.x, stats.y);
                 credits.display(credits.x, credits.y);
                 quit.display(quit.x, quit.y);
+                base.display(foregroundX, 195);
 
                 //add functionality for the buttons
                 replay.update();
@@ -419,12 +431,11 @@ bool Button::update(){
     bool touched = LCD.Touch(&touchX,&touchY);
     bool lastPressed = pressed;
     //check if the pixel touched is inside the button and the button isn't pressed yet
-    if(touchX >= x && touchX <= x+w && touchY >= y && touchY <= y+h){
+    if(touchX >= x && touchX <= x + w && touchY >= y && touchY <= y + h){
         if(touched)//keep the button pressed if the screen is being tapped inside 
             pressed = true;
         else if(lastPressed)//if the button was pressed before but is no longer anymore, activate the function
             (*pressFunction)();
-        
     }
     //check if the screen is no longer being tapped in the button
     else{
@@ -437,7 +448,7 @@ bool Button::update(){
 //pipe constructor
 Pipe::Pipe(float X){
     x = X;
-    y = Random.RandInt()%(GAP_HEIGHT_RANGE+1);
+    y = Random.RandInt() % (GAP_HEIGHT_RANGE+1);
 }
 
 //updates position of pipe pair and adds them to collision buffer
@@ -446,9 +457,9 @@ void Pipe::update(float velocity){
     x -= velocity;
 
     //award points for moving past a pipe
-    if(x<52&&!gavePoints){
-        gavePoints=true;
+    if(x < 52 && !gavePoints){
         score++;
+        gavePoints = true;
     }
     
     //if the pipe reaches the left of the screen, move it to the right of the screen
@@ -538,4 +549,19 @@ void clearCollisions(){
             collisionBuffer[j][i]=false;
         }
     }
+}
+
+// Extremely naive implementation of sin(x) to avoid using external library.
+// Uses first 7 terms of cosine Taylor series, since it has a lower error than the first 7
+// terms of sine's Taylor series. 
+// Shifts input, using the equivalence sin(x) = cos(x - pi/2).
+float sin(float x) {
+    x = x - HALF_PI;
+    return 1 - 
+    ((x * x) / (2)) + 
+    ((x * x * x * x) / (24)) - 
+    ((x * x * x * x * x * x) / (720)) + 
+    ((x * x * x * x * x * x * x * x) / (40320)) -
+    ((x * x * x * x * x * x * x * x * x * x) / (3628800)) +
+    ((x * x * x * x * x * x * x * x * x * x * x * x) / (479001600));
 }
