@@ -22,7 +22,7 @@ float score = 0;
 //collision buffer idea inspired by z buffer
 //https://en.wikipedia.org/wiki/Z-buffering
 bool collisionBuffer[HEIGHT][WIDTH] = {false}, active = true;
-bool coolMode = false;
+bool goomd = false;
 
 /*Image Class
     Image: constructor
@@ -247,8 +247,8 @@ int main()
             case 2:    // Game over
                 //activate the EASTER EGG
                 if(score==69)
-                    coolMode=true;
-                    
+                    goomd=true;
+
                 //update high score
                 if(score>highscore)
                     highscore = score;
@@ -363,7 +363,7 @@ void Image::display(int x, int y)
             if (col & 0xFF000000 && y + j < HEIGHT && y + j >= 0)
             {   
                 //if the easter egg is activated, invert the  color
-                if(coolMode)
+                if(goomd)
                     LCD.SetFontColor(0xFFFFFFFF - col);
                 else
                     LCD.SetFontColor(col);
