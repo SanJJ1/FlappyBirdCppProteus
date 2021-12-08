@@ -19,6 +19,8 @@
 // xTouch, yTouch; variables for detecting touch.
 int xt = 0, yt = 0, status = 0, highscore = 1234567890;
 float score = 0;
+//collision buffer idea inspired by z buffer
+//https://en.wikipedia.org/wiki/Z-buffering
 bool collisionBuffer[HEIGHT][WIDTH] = {false}, active = true;
 bool coolMode = false;
 
