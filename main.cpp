@@ -1,3 +1,10 @@
+/************************************************/
+/*  Author:  Sanjay Janardhan   Date:  12/8/21  */
+/*  Author:  Luke Seragglio     Date:  12/8/21  */
+/*  File:  main.cpp                             */
+/*  Instructor:  Paul Clingan                   */
+/*  Section: 08:00am                            */
+/************************************************/
 #include "FEHLCD.h"
 #include "FEHSD.h"
 #include "FEHUtility.h"
@@ -339,7 +346,7 @@ int main()
 Image::Image(const char *fname)
 {   
     fileName = fname;
-    open the specified image file
+    //open the specified image file
     FILE *fptr = fopen(fileName, "r");
 
     //read in width and height of image
